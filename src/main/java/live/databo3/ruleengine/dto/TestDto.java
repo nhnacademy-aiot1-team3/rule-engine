@@ -1,4 +1,4 @@
-package live.databo3.ruleengine.rabbitmq.dto;
+package live.databo3.ruleengine.dto;
 
 public class TestDto {
     public TestDto() {

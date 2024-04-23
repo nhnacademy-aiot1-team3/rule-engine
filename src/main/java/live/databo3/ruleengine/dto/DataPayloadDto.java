@@ -1,4 +1,4 @@
-package live.databo3.ruleengine.rabbitmq.dto;
+package live.databo3.ruleengine.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
