@@ -1,9 +1,12 @@
 package live.databo3.ruleengine.node;
 
-public abstract class Node {
+import lombok.extern.slf4j.Slf4j;
 
-    public void process() {
-    }
+public interface Node extends Runnable {
+
+    public void init() ;
+    public void process() ;
 
 
+    public void start();
 }

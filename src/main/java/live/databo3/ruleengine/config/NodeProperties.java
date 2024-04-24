@@ -39,5 +39,10 @@ public class NodeProperties {
         return new HashMap<>();
     }
 
+    @Bean
+    public Map<Node, Node> nodeConnection() {
+        return new HashMap<>();
+    }
+
 
 }

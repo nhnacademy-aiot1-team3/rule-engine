@@ -14,16 +14,22 @@ rabbit:
 
 node-flow:
   setting:
-    -
-      node-name: 'rabbit-node-1'
+    - node-name: 'rabbit-node-1'
       node-type: 'RabbitMQ-in'
       environment-name: 'rabbit-env-1'
+      output-node-list:
+        - 'null-check-node-1'
+        - 'influx-node-1'
 
-    -
-      node-name: 'influx-node-1'
+    - node-name: 'null-check-node-1'
+      node-type: 'NullCheck-inout'
+      output-node-list:
+        - 'debug-node-1'
+    - node-name: 'influx-node-1'
       node-type: 'InfluxDB-out'
       environment-name: 'influx-env-1'
-
+    - node-name: 'debug-node-1'
+      node-type: 'Debug-out'
 
   environments:
     rabbitMQ-environment:
@@ -35,6 +41,6 @@ node-flow:
     influxDB-environment:
       environmentName: 'influx-env-1'
       influxUrl: 'http://133.186.251.19:8086'
-      influxBucket: 'databo3'
+      influxBucket: 'test'
       influxOrg: 'databo3'
       influxToken: '_gmvJCS_Q-zVy9V1VJ3CDkO5NA963NYfq9EIniHJqpktedhGH_lNBekFS96ds0L0bMrOybrkuLhlX4xLCDf8Pg=='

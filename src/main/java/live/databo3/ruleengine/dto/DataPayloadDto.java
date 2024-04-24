@@ -5,10 +5,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 @Getter
 @ToString
 @NoArgsConstructor
-public class DataPayloadDto {
+public class DataPayloadDto implements Serializable {
     private Long time;
     private Long value;
 }
