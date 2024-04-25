@@ -2,6 +2,7 @@ spring:
   rabbitmq:
     host: 133.186.228.84
     port: 5672
+    name: test-queue
   influxdb2:
     url: http://133.186.251.19:8086
     bucket: databo3
@@ -12,35 +13,3 @@ rabbit:
   queue:
     name: test-queue
 
-node-flow:
-  setting:
-    - node-name: 'rabbit-node-1'
-      node-type: 'RabbitMQ-in'
-      environment-name: 'rabbit-env-1'
-      output-node-list:
-        - 'null-check-node-1'
-        - 'influx-node-1'
-
-    - node-name: 'null-check-node-1'
-      node-type: 'NullCheck-inout'
-      output-node-list:
-        - 'debug-node-1'
-    - node-name: 'influx-node-1'
-      node-type: 'InfluxDB-out'
-      environment-name: 'influx-env-1'
-    - node-name: 'debug-node-1'
-      node-type: 'Debug-out'
-
-  environments:
-    rabbitMQ-environment:
-      environmentName: 'rabbit-env-1'
-      rabbitHost: '133.186.228.84'
-      rabbitPort: 5672
-      rabbitQueue: 'test-queue'
-
-    influxDB-environment:
-      environmentName: 'influx-env-1'
-      influxUrl: 'http://133.186.251.19:8086'
-      influxBucket: 'test'
-      influxOrg: 'databo3'
-      influxToken: '_gmvJCS_Q-zVy9V1VJ3CDkO5NA963NYfq9EIniHJqpktedhGH_lNBekFS96ds0L0bMrOybrkuLhlX4xLCDf8Pg=='
