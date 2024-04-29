@@ -5,10 +5,18 @@ spring:
     username: guest
     password: guest
 
+  datasource:
+    url: jdbc:mysql://133.186.244.96:3306/nhn_academy_14
+    username: nhn_academy_14
+    password: wvSjRM8JGjjK]ZnJ
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
 rabbitmq:
   queue:
-    name: test-queue
+    name: mqtt-subscription-CENSYSqos0
+
   exchange:
     name: sample-exchange
   routing:
     key: key
+
