@@ -1,13 +1,9 @@
-package live.databo3.ruleengine.dto;
+package live.databo3.ruleengine.event.dto;
 
 import live.databo3.ruleengine.flag.Flag;
-import live.databo3.ruleengine.flag.FromRabbitMQ;
-import live.databo3.ruleengine.flag.FromValueCheck;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.context.ApplicationEvent;
-
-import java.io.Serializable;
 
 @Getter
 @ToString

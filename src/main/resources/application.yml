@@ -4,12 +4,25 @@ spring:
     port: 5672
     name: test-queue
   influxdb2:
-    url: http://133.186.251.19:8086
-    bucket: databo3
-    token: _gmvJCS_Q-zVy9V1VJ3CDkO5NA963NYfq9EIniHJqpktedhGH_lNBekFS96ds0L0bMrOybrkuLhlX4xLCDf8Pg==
+    url: http://180.210.83.241:8086
+    bucket: raw_data
+    token: 5EI2DnDnlObO01V2sZPwEWBujxz13V5ZainoRp-XUcVocBqMBfxoa-R6Ok0g1NTSSH6wtVoQX3WsmPWSHNniLg==
     org: databo3
-
-rabbit:
-  queue:
-    name: test-queue
-
+  jpa:
+    generate-ddl: false
+    show-sql: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        use_sql_comments: true
+        format_sql: true
+        globally_quoted_identifiers: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://133.186.244.96:3306/nhn_academy_23?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
+    username: nhn_academy_23
+    password: o5.WNs/X5Fb*NQ5K

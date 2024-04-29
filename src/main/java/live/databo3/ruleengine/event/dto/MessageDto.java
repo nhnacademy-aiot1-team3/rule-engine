@@ -1,4 +1,4 @@
-package live.databo3.ruleengine.dto;
+package live.databo3.ruleengine.event.dto;
 
 import lombok.*;
 

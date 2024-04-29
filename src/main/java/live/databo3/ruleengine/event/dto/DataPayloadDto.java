@@ -1,4 +1,4 @@
-package live.databo3.ruleengine.dto;
+package live.databo3.ruleengine.event.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,5 +9,5 @@ import lombok.ToString;
 @NoArgsConstructor
 public class DataPayloadDto {
     private Long time;
-    private Long value;
+    private Double value;
 }
