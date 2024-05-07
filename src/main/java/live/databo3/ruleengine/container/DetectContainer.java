@@ -53,7 +53,7 @@ public class DetectContainer {
                 sensorMean.setMeanValue(newMeanValue);
                 sensorLogDtos.add(new SensorLogDto(sensorSn, sensorType, timeStamp, sensorValue));
                 // 정상데이터 100개씩 bulk insert(sersor_sn, timestamp, value)
-                if (sensorLogDtos.size() >= 100) {
+                if (sensorLogDtos.size() >= 1000) {
                     sensorLogService.bulkInsertNormalData(sensorLogDtos);
                     sensorLogDtos.clear();
                 }

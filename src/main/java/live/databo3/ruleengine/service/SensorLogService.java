@@ -39,6 +39,7 @@ public class SensorLogService {
 
     // 정상 데이터 일괄 삽입
     public void bulkInsertNormalData(List<SensorLogDto> sensorLogDtos) {
+        long preTime = System.currentTimeMillis();
         String sql = "INSERT INTO SensorDataLog (sensor_sn, sensor_type, timestamp, value) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
@@ -56,7 +57,8 @@ public class SensorLogService {
 
             ps.executeBatch(); // 일괄 삽입 실행
             conn.commit(); // 수동 커밋
-            System.out.println("정상 데이터 일괄 삽입");
+            long afterTime = System.currentTimeMillis();
+            System.out.println("정상 데이터 일괄 삽입 ----> 개수 : " + sensorLogDtos.size() + "   //   처리시간 : " + (afterTime-preTime));
         } catch (SQLException e) {
             e.printStackTrace();
         }
