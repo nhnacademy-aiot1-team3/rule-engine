@@ -13,8 +13,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +33,6 @@ public class InfluxDBEventListener {
         topicValue.forEach(point::addTag);
 
         point.addField("sensor_value", payload.getValue());
-
         return point;
     }
 
@@ -46,12 +43,6 @@ public class InfluxDBEventListener {
         HashMap<String, String> topicValue = TopicUtil.getTopicValue(messageDto);
         Point point = makePoint(topicValue, messageDto.getPayload());
         write(point);
-
-        Instant now = Instant.now();
-        Instant payloadTime = Instant.ofEpochMilli(messageDto.getPayload().getTime());
-
-        Long timeDifference = Duration.between(payloadTime, now).toSeconds();
-        log.info("\n현재시간 : {}\n센서데이터 시간 : {}\n시간차이 : {}\npayload : {}", now.toEpochMilli(), payloadTime.toEpochMilli(), timeDifference, messageDto.getPayload());
     }
 
 

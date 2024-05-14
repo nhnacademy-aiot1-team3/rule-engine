@@ -1,5 +1,6 @@
 package live.databo3.ruleengine.util;
 
+import live.databo3.ruleengine.event.dto.DataPayloadDto;
 import live.databo3.ruleengine.event.dto.MessageDto;
 
 import java.util.HashMap;
@@ -20,7 +21,7 @@ public class TopicUtil {
 
 
 
-    public static HashMap<String, String> getTopicValue(MessageDto messageDto) {
+    public static HashMap<String, String> getTopicValue(MessageDto<DataPayloadDto> messageDto) {
         HashMap<String, String> topicValue = new HashMap<>();
         StringBuilder topicPattern = new StringBuilder("//([^/]+)");
         topicInitial.forEach((key, value) -> {

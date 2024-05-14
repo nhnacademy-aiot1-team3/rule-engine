@@ -1,14 +1,9 @@
 package live.databo3.ruleengine.ex;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import reactor.core.publisher.Flux;
-import reactor.core.scheduler.Schedulers;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 
 public class QueueReader {
     private BlockingQueue<Integer> queue;
@@ -52,7 +47,7 @@ public class QueueReader {
                 System.out.println("Sent message: " + message);
                 queue.put(message);
 
-            }catch (InterruptedException e) {
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.out.println("Thread interrupted");
             }
@@ -68,7 +63,6 @@ public class QueueReader {
             reader.send(i);
         }
         reader.startReading();
-
 
 
 //        ObjectMapper objectMapper = new ObjectMapper();

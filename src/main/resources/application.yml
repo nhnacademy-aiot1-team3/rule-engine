@@ -1,19 +1,10 @@
 spring:
-  rabbitmq:
-    host: 133.186.228.84
-    port: 5672
-    name: test-queue
-  influxdb2:
-    url: http://180.210.83.241:8086
-    bucket: raw_data
-    token: 5EI2DnDnlObO01V2sZPwEWBujxz13V5ZainoRp-XUcVocBqMBfxoa-R6Ok0g1NTSSH6wtVoQX3WsmPWSHNniLg==
-    org: databo3
   jpa:
     generate-ddl: false
     show-sql: true
     open-in-view: false
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     properties:
@@ -21,8 +12,17 @@ spring:
         use_sql_comments: true
         format_sql: true
         globally_quoted_identifiers: true
+        order_inserts: true
+        order_updates: true
+        jdbc:
+          batch_size: 20000
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://133.186.244.96:3306/nhn_academy_23?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
     username: nhn_academy_23
     password: o5.WNs/X5Fb*NQ5K
+    hikari:
+      data-source-properties:
+        rewriteBatchedStatements: true
+  profiles:
+    active: dev
