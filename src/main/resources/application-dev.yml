@@ -10,3 +10,7 @@ spring:
     bucket: test
     token: 5EI2DnDnlObO01V2sZPwEWBujxz13V5ZainoRp-XUcVocBqMBfxoa-R6Ok0g1NTSSH6wtVoQX3WsmPWSHNniLg==
     org: databo3
+
+predict:
+  api:
+    url: http://125.6.36.234:5000
