@@ -1,0 +1,12 @@
+spring:
+  rabbitmq:
+    host: 103.218.158.101
+    port: 5672
+    name: databo3-dev
+    username: guest
+    password: guest
+  influxdb2:
+    url: http://180.210.83.241:8086
+    bucket: test
+    token: 5EI2DnDnlObO01V2sZPwEWBujxz13V5ZainoRp-XUcVocBqMBfxoa-R6Ok0g1NTSSH6wtVoQX3WsmPWSHNniLg==
+    org: databo3

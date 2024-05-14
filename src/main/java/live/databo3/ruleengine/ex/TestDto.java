@@ -10,6 +10,7 @@ import java.io.Serializable;
 @Getter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class TestDto implements Serializable {
     private String name;
     private String id;
