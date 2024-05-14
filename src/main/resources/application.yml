@@ -1,28 +1,3 @@
 spring:
-  jpa:
-    generate-ddl: false
-    show-sql: true
-    open-in-view: false
-    hibernate:
-      ddl-auto: update
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        use_sql_comments: true
-        format_sql: true
-        globally_quoted_identifiers: true
-        order_inserts: true
-        order_updates: true
-        jdbc:
-          batch_size: 20000
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://133.186.244.96:3306/nhn_academy_23?useSSL=false&serverTimezone=UTC&characterEncoding=UTF-8
-    username: nhn_academy_23
-    password: o5.WNs/X5Fb*NQ5K
-    hikari:
-      data-source-properties:
-        rewriteBatchedStatements: true
   profiles:
     active: dev
