@@ -4,6 +4,8 @@ import live.databo3.ruleengine.ai.adaptor.PredictAdaptor;
 import live.databo3.ruleengine.ai.service.impl.CalculateServiceImpl;
 import live.databo3.ruleengine.ai.service.impl.InfluxDBServiceImpl;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,11 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/predict")
+@Slf4j
 public class PredictController {
     private final PredictAdaptor predictAdaptor;
     private final CalculateServiceImpl calculateService;
     private final InfluxDBServiceImpl influxDBService;
 
+    @Scheduled(cron = "0 0 0 * * 1")
     @PostMapping("/temp")
     public String preidctTemp() {
         String fluxQuery = "from(bucket: \"raw_data\")\n" +
@@ -27,10 +31,13 @@ public class PredictController {
                 "  |> group(columns: [\"site\"])\n" +
                 "  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)\n" +
                 "  |> yield(name: \"mean\")";
+        String meanTemp = calculateService.meanTemp(predictAdaptor.predictTemp(influxDBService.queryData(fluxQuery)));
+        log.info("meanTemp: {}", meanTemp);
 
-        return calculateService.meanTemp(predictAdaptor.predictTemp(influxDBService.queryData(fluxQuery)));
+        return meanTemp;
     }
 
+    @Scheduled(cron = "0 0 6 1 * *")
     @PostMapping("/elect")
     public String preidctElect() {
         String fluxQuery = "from(bucket: \"raw_data\")\n" +
@@ -44,6 +51,9 @@ public class PredictController {
                 "  |> aggregateWindow(every: 2m, fn: mean, createEmpty: false)\n" +
                 "  |> yield(name: \"mean\")";
 
-        return calculateService.kwhElect(predictAdaptor.predictElect(influxDBService.queryData(fluxQuery)));
+        String kwhElect = calculateService.kwhElect(predictAdaptor.predictElect(influxDBService.queryData(fluxQuery)));
+        log.info("kwhElect: {}", kwhElect);
+
+        return kwhElect;
     }
 }
