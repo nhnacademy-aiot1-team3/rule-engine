@@ -1,27 +1,27 @@
-package live.databo3.ruleengine.ai.controller;
+package live.databo3.ruleengine.ai.adaptor.impl;
 
 import live.databo3.ruleengine.ai.adaptor.PredictAdaptor;
+import live.databo3.ruleengine.ai.adaptor.PredictSaveAdaptor;
+import live.databo3.ruleengine.ai.service.RedisSaveService;
 import live.databo3.ruleengine.ai.service.impl.CalculateServiceImpl;
 import live.databo3.ruleengine.ai.service.impl.InfluxDBServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
-@RestController
+@Component
 @RequiredArgsConstructor
-@RequestMapping("/predict")
 @Slf4j
-public class PredictController {
+public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
     private final PredictAdaptor predictAdaptor;
     private final CalculateServiceImpl calculateService;
     private final InfluxDBServiceImpl influxDBService;
+    private final RedisSaveService redisSaveService;
 
-    @Scheduled(cron = "0 0 0 * * 1")
-    @PostMapping("/temp")
-    public String preidctTemp() {
+    @Scheduled(cron = "0 */2 * * * *")
+    public void predictTemp() {
+
         String fluxQuery = "from(bucket: \"raw_data\")\n" +
                 "  |> range(start: -7d)\n" +
                 "  |> filter(fn: (r) => r[\"_measurement\"] == \"nhnacademy\")\n" +
@@ -31,15 +31,15 @@ public class PredictController {
                 "  |> group(columns: [\"site\"])\n" +
                 "  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)\n" +
                 "  |> yield(name: \"mean\")";
-        String meanTemp = calculateService.meanTemp(predictAdaptor.predictTemp(influxDBService.queryData(fluxQuery)));
-        log.info("meanTemp: {}", meanTemp);
+        String preidctTemp = calculateService.meanTemp(predictAdaptor.predictTemp(influxDBService.queryData(fluxQuery)));
+        log.info("preidctTemp: {}", preidctTemp);
 
-        return meanTemp;
+        redisSaveService.saveRedisWithOrganuzationName("org", "predictTemp", preidctTemp);
     }
 
-    @Scheduled(cron = "0 0 6 1 * *")
-    @PostMapping("/elect")
-    public String preidctElect() {
+
+    @Scheduled(cron = "0 */2 * * * *")
+    public void predictElect() {
         String fluxQuery = "from(bucket: \"raw_data\")\n" +
                 "  |> range(start: -7d)\n" +
                 "  |> filter(fn: (r) => r[\"_measurement\"] == \"nhnacademy\")\n" +
@@ -51,9 +51,9 @@ public class PredictController {
                 "  |> aggregateWindow(every: 2m, fn: mean, createEmpty: false)\n" +
                 "  |> yield(name: \"mean\")";
 
-        String kwhElect = calculateService.kwhElect(predictAdaptor.predictElect(influxDBService.queryData(fluxQuery)));
-        log.info("kwhElect: {}", kwhElect);
+        String predictElect = calculateService.kwhElect(predictAdaptor.predictElect(influxDBService.queryData(fluxQuery)));
+        log.info("predictElect: {}", predictElect);
 
-        return kwhElect;
+        redisSaveService.saveRedisWithOrganuzationName("orgs", "predictElect", predictElect);
     }
 }
