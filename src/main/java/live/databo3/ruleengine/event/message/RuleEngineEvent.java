@@ -1,4 +1,4 @@
-package live.databo3.ruleengine.event.dto;
+package live.databo3.ruleengine.event.message;
 
 import live.databo3.ruleengine.flag.Flag;
 import lombok.Getter;
@@ -7,15 +7,13 @@ import org.springframework.context.ApplicationEvent;
 
 @Getter
 @ToString
-public class EventMessage<T> extends ApplicationEvent {
-    private final Long id;
-    private final MessageDto<T> msg;
+public class RuleEngineEvent<T,K> extends ApplicationEvent {
+    private final EventMessage<T,K> msg;
     private final Flag from;
 
 
-    public EventMessage(Object source,Long id, MessageDto<T> msg,Flag from) {
+    public RuleEngineEvent(Object source, EventMessage<T,K> msg, Flag from) {
         super(source);
-        this.id = id;
         this.msg = msg;
         this.from = from;
     }
