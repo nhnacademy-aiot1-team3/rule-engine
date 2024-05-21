@@ -2,7 +2,7 @@ spring:
   rabbitmq:
     host: 103.218.158.101
     port: 5672
-    name: databo3-dev
+    name: mqtt-subscription-CENSYSqos0
     username: guest
     password: guest
   influxdb2:
@@ -10,6 +10,9 @@ spring:
     bucket: test
     token: 5EI2DnDnlObO01V2sZPwEWBujxz13V5ZainoRp-XUcVocBqMBfxoa-R6Ok0g1NTSSH6wtVoQX3WsmPWSHNniLg==
     org: databo3
+  redis:
+    host: http://133.186.244.96
+    port: 6379
 
 predict:
   api:
