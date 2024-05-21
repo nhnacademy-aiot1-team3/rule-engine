@@ -1,15 +1,13 @@
-package live.databo3.ruleengine.event.dto;
+package live.databo3.ruleengine.event.message;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.io.Serializable;
-
 @Getter
 @ToString
 @NoArgsConstructor
-public class DataPayloadDto {
+public class MessagePayload {
     private Long time;
     private Double value;
 }

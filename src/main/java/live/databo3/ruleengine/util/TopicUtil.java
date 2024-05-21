@@ -1,14 +1,14 @@
 package live.databo3.ruleengine.util;
 
-import live.databo3.ruleengine.event.dto.DataPayloadDto;
-import live.databo3.ruleengine.event.dto.MessageDto;
+import live.databo3.ruleengine.event.message.EventMessage;
+import live.databo3.ruleengine.event.message.MessagePayload;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class TopicUtil {
+public final class TopicUtil {
     private static final Map<String, String> topicInitial = Map.of(
             "s", "site",
             "b", "branch",
@@ -20,15 +20,17 @@ public class TopicUtil {
             "de", "description");
 
 
+    private TopicUtil() {
+    }
 
-    public static HashMap<String, String> getTopicValue(MessageDto<DataPayloadDto> messageDto) {
+    public static HashMap<String, String> getTopicValue(EventMessage<String, MessagePayload> eventMessage) {
         HashMap<String, String> topicValue = new HashMap<>();
         StringBuilder topicPattern = new StringBuilder("//([^/]+)");
         topicInitial.forEach((key, value) -> {
             try {
                 topicPattern.insert(1, key);
                 Pattern pattern = Pattern.compile(topicPattern.toString());
-                Matcher matcher = pattern.matcher(messageDto.getTopic());
+                Matcher matcher = pattern.matcher(eventMessage.getTopic());
                 String tag = null;
                 if (matcher.find()) {
                     tag = matcher.group(1);
@@ -41,6 +43,7 @@ public class TopicUtil {
                 topicPattern.delete(1, key.length() + 1);
             }
         });
+        topicValue.put("topic", eventMessage.getTopic());
         return topicValue;
     }
 

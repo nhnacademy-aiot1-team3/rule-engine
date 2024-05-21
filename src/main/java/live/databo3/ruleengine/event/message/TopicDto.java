@@ -1,4 +1,4 @@
-package live.databo3.ruleengine.event.dto;
+package live.databo3.ruleengine.event.message;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,4 +16,5 @@ public class TopicDto {
     private String type;
     private String phase;
     private String description;
+    private String topic;
 }
