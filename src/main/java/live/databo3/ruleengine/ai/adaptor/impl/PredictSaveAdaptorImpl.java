@@ -24,7 +24,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
     private final InfluxDBServiceImpl influxDBService;
     private final RedisSaveService redisSaveService;
 
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 0 */1 * * *")
     public void predictTemp() {
         List<OrganizationResponse> orgList = organizationAdaptor.getOrganizations().getBody();
 
@@ -52,7 +52,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
     }
 
 
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 0 */1 * * *")
     public void predictElect() {
         List<OrganizationResponse> orgList = organizationAdaptor.getOrganizations().getBody();
 
