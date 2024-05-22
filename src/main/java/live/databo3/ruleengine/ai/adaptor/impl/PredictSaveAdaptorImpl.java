@@ -24,7 +24,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
     private final InfluxDBServiceImpl influxDBService;
     private final RedisSaveService redisSaveService;
 
-    @Scheduled(cron = "0 0 */1 * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void predictTemp() {
         List<OrganizationResponse> orgList = organizationAdaptor.getOrganizations().getBody();
 
@@ -52,7 +52,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
     }
 
 
-    @Scheduled(cron = "0 0 */1 * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void predictElect() {
         List<OrganizationResponse> orgList = organizationAdaptor.getOrganizations().getBody();
 
@@ -69,7 +69,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
                         "  |> filter(fn: (r) => r[\"description\"] == \"w\")\n" +
                         "  |> filter(fn: (r) => r[\"phase\"] == \"total\")\n" +
                         "  |> group(columns: [\"branch\"])\n" +
-                        "  |> aggregateWindow(every: 2m, fn: mean, createEmpty: false)\n" +
+                        "  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n" +
                         "  |> yield(name: \"mean\")";
 
                 String predictElect = calculateService.kwhElect(predictAdaptor.predictElect(influxDBService.queryData(fluxQuery)));
