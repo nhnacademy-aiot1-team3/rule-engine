@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
-@Slf4j
 public class CalculateServiceImpl implements CalculateService {
 
     @Override
@@ -33,9 +32,9 @@ public class CalculateServiceImpl implements CalculateService {
         }
         double oneDayW = wSum / (144 * 7);
 
-        long kwh = (Math.round(oneDayW) * 16) / 1000;
-        log.info("kwh: {}",kwh);
-        double electBill = (Math.round(kwh) * 7 * 114.7) + 7220;
+        double kwh = (oneDayW * 16) / 1000;
+
+        double electBill = (kwh * 7 * 114.7) + 7220;
 
         return String.format("%.0f", electBill);
     }
