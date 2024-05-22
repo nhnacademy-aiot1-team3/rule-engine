@@ -17,3 +17,16 @@ spring:
 predict:
   api:
     url: http://125.6.36.234:5000
+#  redis:
+#    host: localhost
+#    port: 6379
+  redis:
+    host: 133.186.244.96
+    port: 6379
+    password: '*N2vya7H@muDTwdNMR!'
+    database: 21
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://admin:1234@192.168.71.111:8761/eureka

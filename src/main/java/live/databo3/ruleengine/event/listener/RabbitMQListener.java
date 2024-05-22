@@ -3,10 +3,9 @@ package live.databo3.ruleengine.event.listener;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import live.databo3.ruleengine.event.dto.DataPayloadDto;
-import live.databo3.ruleengine.event.dto.EventMessage;
-import live.databo3.ruleengine.event.dto.MessageDto;
-import live.databo3.ruleengine.ex.RedisTestDto;
+import live.databo3.ruleengine.event.message.MessagePayload;
+import live.databo3.ruleengine.event.message.RuleEngineEvent;
+import live.databo3.ruleengine.event.message.EventMessage;
 import live.databo3.ruleengine.flag.FromRabbitMQ;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -25,7 +23,6 @@ import java.util.Objects;
 public class RabbitMQListener {
     private final ObjectMapper objectMapper;
     private final ApplicationEventPublisher publisher;
-    private static Long id = 0L;
     private final RedisTemplate<String, Object> redisTemplate;
 
     @RabbitListener(queues = "${spring.rabbitmq.name}")
@@ -33,22 +30,19 @@ public class RabbitMQListener {
         try {
             String payload = new String(message.getBody());
             String topic = message.getMessageProperties().getReceivedRoutingKey().replace(".", "/");
-            DataPayloadDto dataPayloadDto = objectMapper.readValue(payload, DataPayloadDto.class);
+            MessagePayload messagePayload = objectMapper.readValue(payload, MessagePayload.class);
 
-            if (Objects.nonNull(dataPayloadDto.getTime()) && Objects.nonNull(dataPayloadDto.getValue())) {
-                MessageDto<DataPayloadDto> messageDto = new MessageDto<>(topic, dataPayloadDto);
+            if (Objects.nonNull(messagePayload.getTime()) && Objects.nonNull(messagePayload.getValue())) {
+                EventMessage<String,MessagePayload> eventMessage = new EventMessage<>(topic, messagePayload);
 
-//                StopWatchUtil.start(id);
-                log.info("{}", messageDto);
-                publisher.publishEvent(new EventMessage<>(this, id++, messageDto, new FromRabbitMQ()));
-
+                publisher.publishEvent(new RuleEngineEvent<>(this, eventMessage, new FromRabbitMQ()));
             }
 
 
         } catch (MismatchedInputException e) {
             log.error("error : {}", e.getMessage());
         } catch (NullPointerException e) {
-            log.error("Null : {}", e.getMessage());
+            log.error("Null : {} - Message : {}", e.getMessage(),new String(message.getBody()));
         }
     }
 
