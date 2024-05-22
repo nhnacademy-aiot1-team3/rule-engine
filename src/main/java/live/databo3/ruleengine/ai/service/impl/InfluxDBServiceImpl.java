@@ -14,12 +14,26 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * InfluxDBservice의 구현체
+ *
+ * @author 박상진
+ * @version 1.0.0
+ */
 @Service
 @RequiredArgsConstructor
 public class InfluxDBServiceImpl implements InfluxDBService {
 
     private final InfluxDBClient influxDBClient;
 
+    /**
+     * {@inheritDoc}
+     * 쿼리문을 통해서 데이터를 요청한 뒤 결과를 반환 하는 메서드
+     *
+     * @param fluxQuery influxdb 쿼리문
+     * @return AiRquest 예측한 value와 date로 값이 할당됨
+     * @since 1.0.0
+     */
     @Override
     public AiRequest queryData(String fluxQuery) {
         QueryApi queryApi = influxDBClient.getQueryApi();
@@ -29,6 +43,14 @@ public class InfluxDBServiceImpl implements InfluxDBService {
         return processData(tables);
     }
 
+    /**
+     * {@inheritDoc}
+     * 날짜를 가공한 후 결과를 반환 하는 메서드
+     *
+     * @param fluxTables influxdb에서 받은 데이터 리스트
+     * @return AiRequest 예측한 value와 가공된 date로 값이 할당됨
+     * @since 1.0.0
+     */
     @Override
     public AiRequest processData(List<FluxTable> fluxTables) {
         List<FluxRecord> records = fluxTables.get(0).getRecords();

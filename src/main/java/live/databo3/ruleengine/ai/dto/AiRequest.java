@@ -6,6 +6,12 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * Ai에 요청하는 Dto
+ *
+ * @author 박상진
+ * @version 1.0.0
+ */
 @Getter
 @Setter
 @NoArgsConstructor

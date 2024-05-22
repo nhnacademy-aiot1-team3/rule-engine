@@ -14,6 +14,12 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * PredictSaveAdaptor의 구현체
+ *
+ * @author 박상진
+ * @version 1.0.0
+ */
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -24,8 +30,14 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
     private final InfluxDBServiceImpl influxDBService;
     private final RedisSaveService redisSaveService;
 
+    /**
+     * {@inheritDoc}
+     * account-service에 회사명조회를 요청한 후 쿼리문을 통해 평균값 예측 후 Redis에 저장하는 메서드
+     *
+     * @since 1.0.0
+     */
     @Scheduled(cron = "0 0 */1 * * *")
-    public void predictTemp() {
+    public void predictSaveTemp() {
         List<OrganizationResponse> orgList = organizationAdaptor.getOrganizations().getBody();
 
         if(orgList == null || orgList.isEmpty()) {
@@ -51,9 +63,13 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
 
     }
 
-
+    /**
+     * account-service에 회사명조회를 요청한 후 쿼리문을 통해 전기요금 예측 후 Redis에 저장하는 메서드
+     *
+     * @since 1.0.0
+     */
     @Scheduled(cron = "0 0 */1 * * *")
-    public void predictElect() {
+    public void predictSaveElect() {
         List<OrganizationResponse> orgList = organizationAdaptor.getOrganizations().getBody();
 
         if(orgList == null || orgList.isEmpty()) {
@@ -62,7 +78,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
         else {
             for(OrganizationResponse org : orgList) {
                 String fluxQuery = "from(bucket: \"raw_data\")\n" +
-                        "  |> range(start: -7d)\n" +
+                        "  |> range(start: -30d)\n" +
                         "  |> filter(fn: (r) => r[\"_measurement\"] == \"databo3\")\n" +
                         "  |> filter(fn: (r) => r[\"branch\"] == \""+org.getOrganizationName()+"\")\n" +
                         "  |> filter(fn: (r) => r[\"endpoint\"] == \"electrical_energy\")\n" +
