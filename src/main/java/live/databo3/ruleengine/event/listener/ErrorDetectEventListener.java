@@ -6,6 +6,8 @@ import live.databo3.ruleengine.event.dto.DataPayloadDto;
 import live.databo3.ruleengine.event.dto.EventMessage;
 import live.databo3.ruleengine.event.dto.MessageDto;
 import live.databo3.ruleengine.event.dto.TopicDto;
+import live.databo3.ruleengine.flag.FromErrorDetect;
+import live.databo3.ruleengine.flag.FromRabbitMQ;
 import live.databo3.ruleengine.util.TopicUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,10 +40,7 @@ public class ErrorDetectEventListener {
         if (topicDto.getEndpoint().equals("temperature") || topicDto.getEndpoint().equals("co2") || topicDto.getEndpoint().equals("humidity")){
             String targetTopic = topicDto.getDevice() + topicDto.getEndpoint();
             if (!sensorRefValue.containsKey(targetTopic)){
-                if (!sensorRefDef.containsKey(targetTopic)){
-                    List<Double> sensorRefCalData = new ArrayList<>();
-                    sensorRefDef.put(targetTopic, sensorRefCalData);
-                }
+                sensorRefDef.computeIfAbsent(targetTopic, v -> new ArrayList<Double>());
                 if (((List<?>)sensorRefDef.get(targetTopic)).size() < 3){
                     ((List<Double>)sensorRefDef.get(targetTopic)).add(Double.parseDouble(messageDto.getPayload().getValue().toString()));
                 }else {
@@ -53,12 +52,19 @@ public class ErrorDetectEventListener {
                 }
             }else {
                 if((Double) sensorRefValue.get(targetTopic) * 2 < messageDto.getPayload().getValue()){
+                    sensorErrorCount.computeIfAbsent(targetTopic, v -> 0);
+                    sensorErrorCount.put(targetTopic, (int)sensorErrorCount.get(targetTopic) + 1);
+                    if ((int)sensorErrorCount.get(targetTopic) > 2){
+                        //이상탐지 Event publish
+                    }
                     //에러 Event publish
-                    System.out.println("Errordata 발생");
-//                applicationEventPublisher.publishEvent(new EventMessage<>(this, eventMessage.getId(),));
+                    System.out.println("Errordata 발생  기준값 : " + sensorRefValue.get(targetTopic) + " --- 현재값 : " + messageDto.getPayload().getValue());
+                    applicationEventPublisher.publishEvent(new EventMessage<>(this, eventMessage.getId(), messageDto, new FromErrorDetect()));
                 }else {
+                    sensorErrorCount.computeIfPresent(targetTopic, (k, v) -> 0);
+                    sensorRefValue.computeIfPresent(targetTopic, (k,v) -> ( (Double)v + messageDto.getPayload().getValue()) / 2);
                     System.out.println("정상데이터 처리 기준값 : " + sensorRefValue.get(targetTopic) + " --- 현재값 : " + messageDto.getPayload().getValue());
-//                applicationEventPublisher.publishEvent(this);
+                applicationEventPublisher.publishEvent(this);
                 }
             }
         }

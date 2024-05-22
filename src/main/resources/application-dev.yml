@@ -2,7 +2,7 @@ spring:
   rabbitmq:
     host: 103.218.158.101
     port: 5672
-    name: mqtt-subscription-CENSYSqos0
+    name: dev2
     username: guest
     password: guest
   influxdb2:
