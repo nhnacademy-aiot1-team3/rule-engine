@@ -56,10 +56,10 @@ public class ErrorDetectEventListener {
                     sensorErrorCount.put(targetTopic, (int)sensorErrorCount.get(targetTopic) + 1);
                     if ((int)sensorErrorCount.get(targetTopic) > 2){
                         //이상탐지 Event publish
+                        applicationEventPublisher.publishEvent(new EventMessage<>(this, eventMessage.getId(), messageDto, new FromErrorDetect()));
                     }
-                    //에러 Event publish
+
                     System.out.println("Errordata 발생  기준값 : " + sensorRefValue.get(targetTopic) + " --- 현재값 : " + messageDto.getPayload().getValue());
-                    applicationEventPublisher.publishEvent(new EventMessage<>(this, eventMessage.getId(), messageDto, new FromErrorDetect()));
                 }else {
                     sensorErrorCount.computeIfPresent(targetTopic, (k, v) -> 0);
                     sensorRefValue.computeIfPresent(targetTopic, (k,v) -> ( (Double)v + messageDto.getPayload().getValue()) / 2);
