@@ -1,9 +1,7 @@
 package live.databo3.ruleengine.event.listener;
 
-import live.databo3.ruleengine.event.message.ErrorDto;
-import live.databo3.ruleengine.event.message.MessagePayload;
-import live.databo3.ruleengine.event.message.RuleEngineEvent;
-import live.databo3.ruleengine.event.message.TopicDto;
+import live.databo3.ruleengine.event.message.*;
+import live.databo3.ruleengine.flag.FromErrorDetect;
 import live.databo3.ruleengine.sensor.adaptor.SensorAdaptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,14 +28,15 @@ public class ErrorDetectEventListener {
     @SuppressWarnings("unchecked")
     @Async
     @EventListener(condition = "#eventMessage.from instanceof T(live.databo3.ruleengine.flag.FromTopicSplit)")
-    public void errorDetector(RuleEngineEvent<TopicDto, MessagePayload> eventMessage) {
-        TopicDto topic = eventMessage.getMsg().getTopic();
-        if (topic.getEndpoint().equals("temperature") || topic.getEndpoint().equals("co2") || topic.getEndpoint().equals("humidity")){
-            String targetTopic = topic.getDevice() + topic.getEndpoint();
+    public void errorDetector(RuleEngineEvent<TopicDto, MessagePayload> ruleEngineEvent) {
+        EventMessage<TopicDto,MessagePayload> eventMessage = ruleEngineEvent.getMsg();
+        TopicDto topicDto = eventMessage.getTopic();
+        if (topicDto.getEndpoint().equals("temperature") || topicDto.getEndpoint().equals("co2") || topicDto.getEndpoint().equals("humidity")){
+            String targetTopic = topicDto.getDevice() + topicDto.getEndpoint();
             if (!sensorRefValue.containsKey(targetTopic)){
                 sensorRefDef.computeIfAbsent(targetTopic, v -> new ArrayList<Double>());
                 if (((List<?>)sensorRefDef.get(targetTopic)).size() < 3){
-                    ((List<Double>)sensorRefDef.get(targetTopic)).add(Double.parseDouble(eventMessage.getMsg().getPayload().getValue().toString()));
+                    ((List<Double>)sensorRefDef.get(targetTopic)).add(Double.parseDouble(eventMessage.getPayload().getValue().toString()));
                 }else {
                     Double sum = 0.0;
                     for (Double data : (List<Double>)sensorRefDef.get(targetTopic)){
@@ -46,17 +45,19 @@ public class ErrorDetectEventListener {
                     sensorRefValue.put(targetTopic, sum / 3);
                 }
             }else {
-                if((Double) sensorRefValue.get(targetTopic) * 2 < eventMessage.getMsg().getPayload().getValue()){
+                double refValue = (Double) sensorRefValue.get(targetTopic) /2;
+                if(Math.abs(eventMessage.getPayload().getValue() - (Double) sensorRefValue.get(targetTopic)) > refValue){
                     sensorErrorCount.computeIfAbsent(targetTopic, v -> 0);
                     sensorErrorCount.put(targetTopic, (int)sensorErrorCount.get(targetTopic) + 1);
                     if ((int)sensorErrorCount.get(targetTopic) > 2){
-                        //이상탐지 Event publish
+                        EventMessage<TopicDto, MessagePayload> newEventMessage = new EventMessage<>(topicDto,eventMessage.getPayload());
+                        applicationEventPublisher.publishEvent(new RuleEngineEvent<>(this, newEventMessage, new FromErrorDetect()));
                     }
-                    ErrorDto errorDto = new ErrorDto(topic.getDevice(), topic.getEndpoint(), eventMessage.getMsg().getPayload().getValue(), "strange value received");
+                    ErrorDto errorDto = new ErrorDto(topicDto.getDevice(), topicDto.getEndpoint(), eventMessage.getPayload().getValue(), "strange value received");
                     sensorAdaptor.errorLogInsert(errorDto);
                 }else {
                     sensorErrorCount.computeIfPresent(targetTopic, (k, v) -> 0);
-                    sensorRefValue.computeIfPresent(targetTopic, (k,v) -> ( (Double)v + eventMessage.getMsg().getPayload().getValue()) / 2);
+                    sensorRefValue.computeIfPresent(targetTopic, (k,v) -> ( (Double)v + eventMessage.getPayload().getValue()) / 2);
                 applicationEventPublisher.publishEvent(this);
                 }
             }
