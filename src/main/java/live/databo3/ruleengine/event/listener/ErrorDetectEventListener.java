@@ -27,7 +27,7 @@ public class ErrorDetectEventListener {
      */
     @SuppressWarnings("unchecked")
     @Async
-    @EventListener(condition = "#eventMessage.from instanceof T(live.databo3.ruleengine.flag.FromTopicSplit)")
+    @EventListener(condition = "#ruleEngineEvent.from instanceof T(live.databo3.ruleengine.flag.FromTopicSplit)")
     public void errorDetector(RuleEngineEvent<TopicDto, MessagePayload> ruleEngineEvent) {
         EventMessage<TopicDto,MessagePayload> eventMessage = ruleEngineEvent.getMsg();
         TopicDto topicDto = eventMessage.getTopic();
@@ -47,7 +47,7 @@ public class ErrorDetectEventListener {
             }else {
                 double refValue = (Double) sensorRefValue.get(targetTopic) /2;
                 if(Math.abs(eventMessage.getPayload().getValue() - (Double) sensorRefValue.get(targetTopic)) > refValue){
-                    sensorErrorCount.computeIfAbsent(targetTopic, v -> 0);
+                    sensorErrorCount.putIfAbsent(targetTopic, 0);
                     sensorErrorCount.put(targetTopic, (int)sensorErrorCount.get(targetTopic) + 1);
                     if ((int)sensorErrorCount.get(targetTopic) > 2){
                         EventMessage<TopicDto, MessagePayload> newEventMessage = new EventMessage<>(topicDto,eventMessage.getPayload());
