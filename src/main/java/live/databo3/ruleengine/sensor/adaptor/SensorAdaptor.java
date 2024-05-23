@@ -22,5 +22,5 @@ public interface SensorAdaptor {
     ResponseEntity<Void> getSensorTypes();
 
     @PostMapping("/api/sensor/device/log")
-    ResponseEntity<Void> deviceLoginsert(@RequestBody DeviceLogDto deviceLogDto);
+    ResponseEntity<Void> deviceLogInsert(@RequestBody DeviceLogDto deviceLogDto);
 }

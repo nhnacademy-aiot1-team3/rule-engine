@@ -8,6 +8,6 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class DeviceLogDto {
-    private String sensorSn;
+    private String deviceSn;
     private Double value;
 }
