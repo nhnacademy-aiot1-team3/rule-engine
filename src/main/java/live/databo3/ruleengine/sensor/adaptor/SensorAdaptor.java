@@ -1,5 +1,6 @@
 package live.databo3.ruleengine.sensor.adaptor;
 
+import live.databo3.ruleengine.event.message.DeviceLogDto;
 import live.databo3.ruleengine.event.message.TopicDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -19,4 +20,7 @@ public interface SensorAdaptor {
 
     @GetMapping("/sensorTypes")
     ResponseEntity<Void> getSensorTypes();
+
+    @PostMapping("/api/sensor/device/log")
+    ResponseEntity<Void> deviceLoginsert(@RequestBody DeviceLogDto deviceLogDto);
 }
