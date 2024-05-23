@@ -36,7 +36,8 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
      *
      * @since 1.0.0
      */
-    @Scheduled(cron = "0 0 */1 * * *")
+//    @Scheduled(cron = "0 0 */1 * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void predictSaveTemp() {
         List<OrganizationResponse> orgList = organizationAdaptor.getOrganizations().getBody();
 
@@ -53,10 +54,14 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
                         "  |> group(columns: [\"branch\"])\n" +
                         "  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)\n" +
                         "  |> yield(name: \"mean\")";
-                String preidctTemp = calculateService.meanTemp(predictAdaptor.predictTemp(influxDBService.queryData(fluxQuery)));
-                log.info("preidctTemp: {}", preidctTemp);
+                try {
+                    String preidctTemp = calculateService.meanTemp(predictAdaptor.predictTemp(influxDBService.queryData(fluxQuery)));
+                    log.info("preidctTemp: {}", preidctTemp);
 
-                redisSaveService.saveRedisWithOrganuzationName(org.getOrganizationName(), "predictTemp", preidctTemp);
+                    redisSaveService.saveRedisWithOrganuzationName(org.getOrganizationName(), "predictTemp", preidctTemp);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -68,7 +73,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
      *
      * @since 1.0.0
      */
-    @Scheduled(cron = "0 0 */1 * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     public void predictSaveElect() {
         List<OrganizationResponse> orgList = organizationAdaptor.getOrganizations().getBody();
 
@@ -88,10 +93,15 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
                         "  |> aggregateWindow(every: 10m, fn: mean, createEmpty: false)\n" +
                         "  |> yield(name: \"mean\")";
 
-                String predictElect = calculateService.kwhElect(predictAdaptor.predictElect(influxDBService.queryData(fluxQuery)));
-                log.info("predictElect: {}", predictElect);
+                try {
+                    String predictElect = calculateService.kwhElect(predictAdaptor.predictElect(influxDBService.queryData(fluxQuery)));
+                    log.info("predictElect: {}", predictElect);
+                    redisSaveService.saveRedisWithOrganuzationName(org.getOrganizationName(), "predictElect", predictElect);
 
-                redisSaveService.saveRedisWithOrganuzationName(org.getOrganizationName(), "predictElect", predictElect);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
         }
 
