@@ -33,6 +33,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
     /**
      * {@inheritDoc}
      * account-service에 회사명조회를 요청한 후 쿼리문을 통해 평균값 예측 후 Redis에 저장하는 메서드
+     * orgList에는 있지만 influxDB의 branch와 맞지 않을 경우 log error로 남김
      *
      * @since 1.0.0
      */
@@ -69,7 +70,9 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
     }
 
     /**
+     * {@inheritDoc}
      * account-service에 회사명조회를 요청한 후 쿼리문을 통해 전기요금 예측 후 Redis에 저장하는 메서드
+     * orgList에는 있지만 influxDB의 branch와 맞지 않을 경우 log error로 남김
      *
      * @since 1.0.0
      */
