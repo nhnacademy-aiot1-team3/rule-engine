@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import live.databo3.ruleengine.event.message.*;
 import live.databo3.ruleengine.sensor.adaptor.SensorAdaptor;
+import live.databo3.ruleengine.util.TopicUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
 
 @Slf4j
 @Component
@@ -17,7 +20,7 @@ public class DeviceLogListener {
     private final SensorAdaptor sensorAdaptor;
     private final ObjectMapper objectMapper;
 
-    @RabbitListener(queues = "controllercheck")
+    @RabbitListener(queues = "control-message")
     public void deviceLogInsert(Message message) throws JsonProcessingException {
         String topic = message.getMessageProperties().getReceivedRoutingKey();
         String payload = new String(message.getBody());

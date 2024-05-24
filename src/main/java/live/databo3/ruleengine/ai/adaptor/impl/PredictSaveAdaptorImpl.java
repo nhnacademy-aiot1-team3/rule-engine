@@ -59,8 +59,8 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
                     log.info("preidctTemp: {}", preidctTemp);
 
                     redisSaveService.saveRedisWithOrganuzationName(org.getOrganizationName(), "predictTemp", preidctTemp);
-                }catch (Exception e) {
-                    e.printStackTrace();
+                }catch (IndexOutOfBoundsException e) {
+                    log.error(org.getOrganizationName() + "의 predict 정보를 불러오지 못했습니다.");
                 }
             }
         }
@@ -99,7 +99,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
                     redisSaveService.saveRedisWithOrganuzationName(org.getOrganizationName(), "predictElect", predictElect);
 
                 }catch (Exception e){
-                    e.printStackTrace();
+                    log.error(org.getOrganizationName() + "의 predict 정보를 불러오지 못했습니다.");
                 }
 
             }
