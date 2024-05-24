@@ -2,7 +2,7 @@ spring:
   rabbitmq:
     host: 103.218.158.101
     port: 5672
-    name: databo3-dev
+    name: dev2
     username: guest
     password: guest
   influxdb2:
