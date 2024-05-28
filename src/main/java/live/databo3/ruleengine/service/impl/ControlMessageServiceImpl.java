@@ -29,6 +29,7 @@ public class ControlMessageServiceImpl implements ControlMessageService {
             Map<String, String> message = new HashMap<>();
             message.put("device_id", deviceId);
             message.put("state", state);
+
             log.info("Publishing message: " + message);
 
             MqttMessage mqttMessage = new MqttMessage(objectMapper.writeValueAsBytes(message));
