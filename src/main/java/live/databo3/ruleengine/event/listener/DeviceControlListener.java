@@ -52,14 +52,11 @@ public class DeviceControlListener {
             String redisConfig = organizationConfig.get("general:" + topicDto.getDevice() + "/" + topicDto.getEndpoint());
             Map<String, String> config = objectMapper.readValue(redisConfig, Map.class);
             String configType = config.get("functionName");
-            if (configType.equals("CUSTOM")){
-                log.info(config.get("deviceName"));
-            }
 
             /*
             redis 에 저장된 sensor 에 따라 functionName 을 확인하고, CUSTOM 일 경우 수동제어, AI 일 경우 AI 분기 if-els
              */
-            if (configType.equals("CUSTOM") && (!config.get("deviceName").equals("null"))) {
+            if (configType.equals("CUSTOM") && (config.get("deviceName") != null)) {
                 log.info(config.get("deviceName"));
                 String customRedisKey = organizationConfig.get("value:" + topicDto.getDevice() + "/" + topicDto.getEndpoint());
                 log.info(customRedisKey);
@@ -82,7 +79,7 @@ public class DeviceControlListener {
                     }
                 }
 
-            } else if (configType.equals("AI") && (!config.get("deviceName").equals("null"))) {
+            } else if (configType.equals("AI") && (config.get("deviceName") != null)) {
                 Map<String, String> aiConfig = objectMapper.convertValue(redisTemplate.opsForHash().entries("ai:" + topicDto.getPlace()), new TypeReference<>() {
                 });
                 Double aiTarget = Double.parseDouble(aiConfig.get("predictTemp"));
@@ -99,7 +96,7 @@ public class DeviceControlListener {
                 log.info("회사명 : " + topicDto.getBranch() +
                         "\n 위치 : "+ topicDto.getPlace() +
                         "\n 센서 시리얼 넘버 : "+ topicDto.getDevice() +
-                        "\n 설정 타입 : "+ config.get("fuctionName") +
+                        "\n 설정 타입 : "+ config.get("functionName") +
                         "\n 제어 장치 시리얼 넘버 : "+ config.get("deviceName"));
             }
         }

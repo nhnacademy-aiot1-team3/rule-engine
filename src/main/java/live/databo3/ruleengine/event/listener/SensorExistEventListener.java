@@ -27,7 +27,7 @@ public class SensorExistEventListener {
 
     @Async
     @EventListener(condition = "#ruleEngineEvent.from instanceof T(live.databo3.ruleengine.flag.FromTopicSplit)")
-    public void sensorExist(RuleEngineEvent<TopicDto, MessagePayload> ruleEngineEvent) throws InterruptedException {
+    public void sensorExist(RuleEngineEvent<TopicDto, MessagePayload> ruleEngineEvent) {
         TopicDto topic = ruleEngineEvent.getMsg().getTopic();
         try {
             organizationInfoService.getSensorListAndAddSensor(topic);

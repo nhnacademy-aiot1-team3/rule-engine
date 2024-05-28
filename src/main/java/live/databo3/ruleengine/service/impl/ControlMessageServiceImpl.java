@@ -17,7 +17,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ControlMessageServiceImpl implements ControlMessageService {
     private final ObjectMapper objectMapper;
-    private IMqttClient client;
+    private final IMqttClient client;
 
     @Override
     public void controlMessagePublish(String deviceId, String state) {
@@ -34,6 +34,8 @@ public class ControlMessageServiceImpl implements ControlMessageService {
             MqttMessage mqttMessage = new MqttMessage(objectMapper.writeValueAsBytes(message));
             mqttMessage.setQos(0); // QoS 설정
             mqttMessage.setRetained(false);
+
+            client.publish("control/s/nhnacademy/conrollmessage", mqttMessage);
         } catch (MqttException e) {
             log.error("client 연결 오류.");
         } catch (JsonProcessingException e) {
