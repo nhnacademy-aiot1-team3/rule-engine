@@ -43,7 +43,6 @@ public class DeviceControlListener {
     public void controlDevice(RuleEngineEvent<TopicDto, MessagePayload> ruleEngineEvent) throws JsonProcessingException {
         TopicDto topicDto = ruleEngineEvent.getMsg().getTopic();
         if (Boolean.FALSE.equals(redisTemplate.hasKey(topicDto.getBranch()))) {
-            log.info(topicDto.getBranch());
             sensorAdaptor.reloadRedis(topicDto.getBranch());
         }
         if (topicDto.getEndpoint().equals("temperature") || topicDto.getEndpoint().equals("humidity") || topicDto.getEndpoint().equals("co2")) {
@@ -57,24 +56,17 @@ public class DeviceControlListener {
             redis 에 저장된 sensor 에 따라 functionName 을 확인하고, CUSTOM 일 경우 수동제어, AI 일 경우 AI 분기 if-els
              */
             if (configType.equals("CUSTOM") && (config.get("deviceName") != null)) {
-                log.info(config.get("deviceName"));
                 String customRedisKey = organizationConfig.get("value:" + topicDto.getDevice() + "/" + topicDto.getEndpoint());
-                log.info(customRedisKey);
                 Map<String, String> customConfig = objectMapper.readValue(customRedisKey, Map.class);
-                log.info("customConfig : " + customConfig);
                 double target = Double.parseDouble(customConfig.get("firstEntry"));
                 double threshold = Double.parseDouble(customConfig.get("secondEntry"));
-                log.info("target : " + target + " // threshold : " + threshold);
                 if (Math.abs(ruleEngineEvent.getMsg().getPayload().getValue() - target) > threshold) {
                     /*
                     제어신호 MQTTMessage 로 보내는 부분.
                      */
                     if (ruleEngineEvent.getMsg().getPayload().getValue() - target > 0) {
-                        log.info("over 수동 제어신호 전송");
-                        log.info(config.get("deviceName"));
                         controlMessageService.controlMessagePublish(config.get("deviceName"), "0");
                     } else {
-                        log.info("under 수동 제어신호 전송");
                         controlMessageService.controlMessagePublish(config.get("deviceName"), "1");
                     }
                 }
@@ -85,19 +77,11 @@ public class DeviceControlListener {
                 Double aiTarget = Double.parseDouble(aiConfig.get("predictTemp"));
                 if (Math.abs(ruleEngineEvent.getMsg().getPayload().getValue() - aiTarget) > 1.5) {
                     if (ruleEngineEvent.getMsg().getPayload().getValue() - aiTarget > 0) {
-                        log.info("over AI 제어신호 전송");
                         controlMessageService.controlMessagePublish(config.get("deviceName"), "0");
                     } else {
-                        log.info("under AI 제어신호 전송");
                         controlMessageService.controlMessagePublish(config.get("deviceName"), "1");
                     }
                 }
-            }else {
-                log.info("회사명 : " + topicDto.getBranch() +
-                        "\n 위치 : "+ topicDto.getPlace() +
-                        "\n 센서 시리얼 넘버 : "+ topicDto.getDevice() +
-                        "\n 설정 타입 : "+ config.get("functionName") +
-                        "\n 제어 장치 시리얼 넘버 : "+ config.get("deviceName"));
             }
         }
 
