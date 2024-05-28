@@ -3,9 +3,9 @@ package live.databo3.ruleengine.event.listener;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
-import live.databo3.ruleengine.event.dto.DataPayloadDto;
-import live.databo3.ruleengine.event.dto.EventMessage;
-import live.databo3.ruleengine.event.dto.MessageDto;
+import live.databo3.ruleengine.event.message.MessagePayload;
+import live.databo3.ruleengine.event.message.RuleEngineEvent;
+import live.databo3.ruleengine.event.message.EventMessage;
 import live.databo3.ruleengine.util.TopicUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,21 +27,20 @@ public class InfluxDBEventListener {
         influxDBClient.getWriteApiBlocking().writePoint(point);
     }
 
-    private Point makePoint(Map<String, String> topicValue, DataPayloadDto payload) {
+    private Point makePoint(Map<String, String> topicValue, MessagePayload payload) {
         Point point = Point.measurement(topicValue.get("site"))
                 .time(payload.getTime(), WritePrecision.MS);
         topicValue.forEach(point::addTag);
-
         point.addField("sensor_value", payload.getValue());
         return point;
     }
 
     @Async
-    @EventListener(condition = "#eventMessage.from instanceof T(live.databo3.ruleengine.flag.FromRabbitMQ)")
-    public void insertInflux(EventMessage<DataPayloadDto> eventMessage) {
-        MessageDto<DataPayloadDto> messageDto = eventMessage.getMsg();
-        HashMap<String, String> topicValue = TopicUtil.getTopicValue(messageDto);
-        Point point = makePoint(topicValue, messageDto.getPayload());
+    @EventListener(condition = "#ruleEngineEvent.from instanceof T(live.databo3.ruleengine.flag.FromRabbitMQ)")
+    public void insertInflux(RuleEngineEvent<String,MessagePayload> ruleEngineEvent) {
+        EventMessage<String,MessagePayload> eventMessage = ruleEngineEvent.getMsg();
+        HashMap<String, String> topicValue = TopicUtil.getTopicValue(eventMessage);
+        Point point = makePoint(topicValue, eventMessage.getPayload());
         write(point);
     }
 
