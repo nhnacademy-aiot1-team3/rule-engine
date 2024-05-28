@@ -24,4 +24,4 @@ predict:
 eureka:
   client:
     service-url:
-      defaultZone: http://admin:1234@192.168.71.111:8761/eureka
+      defaultZone: http://admin:1234@localhost:8761/eureka

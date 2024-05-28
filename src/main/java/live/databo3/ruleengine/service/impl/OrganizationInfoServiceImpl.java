@@ -51,7 +51,6 @@ public class OrganizationInfoServiceImpl implements OrganizationInfoService {
         });
 
         Object deviceInfo = collect.get("sensorList:" + deviceName);
-        log.info("{} : {} : {}", deviceName,topic.getEndpoint(),deviceInfo);
 
 
         try {
