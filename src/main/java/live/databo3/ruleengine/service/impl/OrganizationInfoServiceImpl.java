@@ -29,13 +29,13 @@ public class OrganizationInfoServiceImpl implements OrganizationInfoService {
     public void getSensorListAndAddSensor(TopicDto topic) throws JsonProcessingException {
         synchronized (this) {
             if (Boolean.FALSE.equals(redisTemplate.hasKey("sensorList"))) {
-                log.info("{}", "센서리스트 요청");
                 sensorAdaptor.getSensorTypes();
             }
         }
         List<String> sensorList = redisTemplate.opsForList().range("sensorList", 0, -1).stream()
                 .map(Object::toString)
                 .collect(Collectors.toList());
+
         if (Boolean.FALSE.equals(sensorList.contains(topic.getEndpoint()))) {
             return;
         }
@@ -51,7 +51,6 @@ public class OrganizationInfoServiceImpl implements OrganizationInfoService {
         });
 
         Object deviceInfo = collect.get("sensorList:" + deviceName);
-        log.info("{} : {} : {}", deviceName,topic.getEndpoint(),deviceInfo);
 
 
         try {
