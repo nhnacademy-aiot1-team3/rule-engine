@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /*
@@ -51,11 +52,15 @@ public class DeviceControlListener {
             String redisConfig = organizationConfig.get("general:" + topicDto.getDevice() + "/" + topicDto.getEndpoint());
             Map<String, String> config = objectMapper.readValue(redisConfig, Map.class);
             String configType = config.get("functionName");
+            if (configType.equals("CUSTOM")){
+                log.info(config.get("deviceName"));
+            }
 
             /*
             redis 에 저장된 sensor 에 따라 functionName 을 확인하고, CUSTOM 일 경우 수동제어, AI 일 경우 AI 분기 if-els
              */
             if (configType.equals("CUSTOM") && (!config.get("deviceName").equals("null"))) {
+                log.info(config.get("deviceName"));
                 String customRedisKey = organizationConfig.get("value:" + topicDto.getDevice() + "/" + topicDto.getEndpoint());
                 log.info(customRedisKey);
                 Map<String, String> customConfig = objectMapper.readValue(customRedisKey, Map.class);
@@ -75,11 +80,9 @@ public class DeviceControlListener {
                         log.info("under 수동 제어신호 전송");
                         controlMessageService.controlMessagePublish(config.get("deviceName"), "1");
                     }
-                } else {
-                    log.info("정상 데이터");
                 }
 
-            } else if (configType.equals("AI")) {
+            } else if (configType.equals("AI") && (!config.get("deviceName").equals("null"))) {
                 Map<String, String> aiConfig = objectMapper.convertValue(redisTemplate.opsForHash().entries("ai:" + topicDto.getPlace()), new TypeReference<>() {
                 });
                 Double aiTarget = Double.parseDouble(aiConfig.get("predictTemp"));
@@ -91,9 +94,13 @@ public class DeviceControlListener {
                         log.info("under AI 제어신호 전송");
                         controlMessageService.controlMessagePublish(config.get("deviceName"), "1");
                     }
-                } else {
-                    log.info("정상 데이터");
                 }
+            }else {
+                log.info("회사명 : " + topicDto.getBranch() +
+                        "\n 위치 : "+ topicDto.getPlace() +
+                        "\n 센서 시리얼 넘버 : "+ topicDto.getDevice() +
+                        "\n 설정 타입 : "+ config.get("fuctionName") +
+                        "\n 제어 장치 시리얼 넘버 : "+ config.get("deviceName"));
             }
         }
 

@@ -17,29 +17,27 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ControlMessageServiceImpl implements ControlMessageService {
     private final ObjectMapper objectMapper;
+    private IMqttClient client;
 
     @Override
     public void controlMessagePublish(String deviceId, String state) {
-        UUID uid = UUID.randomUUID();
-        try (IMqttClient serverClient = new MqttClient("tcp://192.168.71.92:1883", uid.toString())) {
-            MqttConnectOptions options = new MqttConnectOptions();
-            options.setAutomaticReconnect(true);
-            options.setCleanSession(true);
-            options.setUserName("user1");
-            options.setPassword("1234".toCharArray());
-            serverClient.connect(options);
-
-
+        try {
+            if(!client.isConnected()){
+                log.error("클라이언트가 연결되지 않았습니다. 재연결을 시도합니다.");
+                client.reconnect();
+            }
             Map<String, String> message = new HashMap<>();
-            message.put("device_id",deviceId);
-            message.put("state",state);
-            log.info(message.toString());
-            serverClient.publish("data/s/nhnacademy/conrollmessage", new MqttMessage(objectMapper.writeValueAsBytes(message)));
+            message.put("device_id", deviceId);
+            message.put("state", state);
+            log.info("Publishing message: " + message);
 
+            MqttMessage mqttMessage = new MqttMessage(objectMapper.writeValueAsBytes(message));
+            mqttMessage.setQos(0); // QoS 설정
+            mqttMessage.setRetained(false);
         } catch (MqttException e) {
-            e.printStackTrace();
+            log.error("client 연결 오류.");
         } catch (JsonProcessingException e) {
-            log.error("JsonProcessException occurred");
+            log.error("Object Mapper 오류.");
         }
     }
 }
