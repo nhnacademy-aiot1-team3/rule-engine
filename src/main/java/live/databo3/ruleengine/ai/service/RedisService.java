@@ -6,7 +6,7 @@ package live.databo3.ruleengine.ai.service;
  * @author 박상진
  * @version 1.0.0
  */
-public interface RedisSaveService {
+public interface RedisService {
     /**
      * Redis에 회사명, hashkey, value를 저장하는 메서드
      * @param organzationName 회사명
@@ -15,5 +15,7 @@ public interface RedisSaveService {
      * @since 1.0.0
      */
     void saveRedisWithOrganuzationName(String organzationName,String hashKey, Object value);
+
+    String getPredictElectValue(String orgnzationName);
 
 }

@@ -1,9 +1,14 @@
 package live.databo3.ruleengine.ai.service.impl;
 
-import live.databo3.ruleengine.ai.service.RedisSaveService;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import live.databo3.ruleengine.ai.service.RedisService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * RedisSaveService의 구현체
@@ -13,8 +18,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
-public class RedisSaveServiceImpl implements RedisSaveService {
+@Slf4j
+public class RedisServiceImpl implements RedisService {
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
 
     /**
      * {@inheritDoc}
@@ -28,4 +35,14 @@ public class RedisSaveServiceImpl implements RedisSaveService {
     public void saveRedisWithOrganuzationName(String organzationName,String hashKey, Object value) {
         redisTemplate.opsForHash().put("ai:" + organzationName, hashKey, value);
     }
+
+    @Override
+    public String getPredictElectValue(String orgnzationName) {
+        log.info("org : {}", orgnzationName);
+        Map<String, Object> orgRedisList = objectMapper.convertValue(redisTemplate.opsForHash().entries("ai:" + orgnzationName), new TypeReference<>() {});
+        log.info("orgRedisList : {}",orgRedisList.toString());
+        return orgRedisList.get("predictElect").toString();
+    }
+
+
 }
