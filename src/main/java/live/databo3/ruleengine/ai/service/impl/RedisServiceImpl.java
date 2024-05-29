@@ -26,6 +26,7 @@ public class RedisServiceImpl implements RedisService {
     /**
      * {@inheritDoc}
      * Redis에 ai:회사명, hashKey, value를 저장하는 메서드
+     *
      * @param organzationName 회사명
      * @param hashKey predictTemp, preidctElect 중에 하나
      * @param value preidct 된 값
@@ -36,11 +37,19 @@ public class RedisServiceImpl implements RedisService {
         redisTemplate.opsForHash().put("ai:" + organzationName, hashKey, value);
     }
 
+    /**
+     * {@inheritDoc}
+     * key에 맞게 redis에서 조회 후 전기요금 반환하는 메서드
+     *
+     * @param orgnzationName 회사명
+     * @return predictElectValue 예측한 전기요금
+     * @since 1.0.0
+     */
+
     @Override
     public String getPredictElectValue(String orgnzationName) {
-        log.info("org : {}", orgnzationName);
         Map<String, Object> orgRedisList = objectMapper.convertValue(redisTemplate.opsForHash().entries("ai:" + orgnzationName), new TypeReference<>() {});
-        log.info("orgRedisList : {}",orgRedisList.toString());
+
         return orgRedisList.get("predictElect").toString();
     }
 
