@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
  * @version 1.0.0
  */
 @Service
+@Slf4j
 public class CalculateServiceImpl implements CalculateService {
     /**
      * {@inheritDoc}
@@ -51,11 +52,10 @@ public class CalculateServiceImpl implements CalculateService {
         for (double value : aiResponse.getPrediction()) {
             wSum += value;
         }
-        double oneDayW = wSum / (144 * 7);
 
-        double kwh = (oneDayW * 16) / 1000;
-
-        double electBill = (kwh * 7 * 114.7) + 7220;
+        double oneHourW = wSum / (30 * 24);
+        double kwh = (oneHourW * 16) / 1000;
+        double electBill = (kwh * 30 * 145.7) + 7220;
 
         return String.format("%.0f", electBill);
     }
