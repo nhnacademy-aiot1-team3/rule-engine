@@ -24,7 +24,7 @@ public class ElectChargeController {
      * @return predictElectValue redis에 저장된 예측된 전기요금
      */
     @GetMapping("/api/ruleengine/{organizationName}/electcharge")
-    public String electCharge(@PathVariable String organizationName) {
+    public String getElectCharge(@PathVariable String organizationName) {
         return redisService.getPredictElectValue(organizationName);
     }
 }
