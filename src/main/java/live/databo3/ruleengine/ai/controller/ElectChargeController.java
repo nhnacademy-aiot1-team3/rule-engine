@@ -20,11 +20,11 @@ public class ElectChargeController {
     /**
      * Get요청 시 orgName을 파라미터로 받아서 전기요금을 반환하는 메서드
      *
-     * @param orgName
+     * @param organizationName
      * @return predictElectValue redis에 저장된 예측된 전기요금
      */
-    @GetMapping("/{orgName}/electcharge")
-    public String electCharge(@PathVariable String orgName) {
-        return redisService.getPredictElectValue(orgName);
+    @GetMapping("/api/ruleengine/{organizationName}/electcharge")
+    public String getElectCharge(@PathVariable String organizationName) {
+        return redisService.getPredictElectValue(organizationName);
     }
 }
