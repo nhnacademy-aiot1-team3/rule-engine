@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -28,14 +29,14 @@ public class OrganizationInfoServiceImpl implements OrganizationInfoService {
     public void getSensorListAndAddSensor(TopicDto topic) throws JsonProcessingException {
         synchronized (this) {
             if (Boolean.FALSE.equals(redisTemplate.hasKey("sensorList"))) {
-                log.info("{}", "센서리스트 요청");
                 sensorAdaptor.getSensorTypes();
             }
         }
         List<String> sensorList = redisTemplate.opsForList().range("sensorList", 0, -1).stream()
                 .map(Object::toString)
                 .collect(Collectors.toList());
-        if (!sensorList.contains(topic.getEndpoint())) {
+
+        if (Boolean.FALSE.equals(sensorList.contains(topic.getEndpoint()))) {
             return;
         }
 
@@ -45,18 +46,17 @@ public class OrganizationInfoServiceImpl implements OrganizationInfoService {
         if (Boolean.FALSE.equals(redisTemplate.hasKey(organizationName))) {
             sensorAdaptor.reloadRedis(organizationName);
         }
-        Map<Object, Object> entries = redisTemplate.opsForHash().entries(organizationName);
 
-        Map<String, Object> collect = objectMapper.convertValue(entries, new TypeReference<>() {
+        Map<String, Object> collect = objectMapper.convertValue(redisTemplate.opsForHash().entries(organizationName), new TypeReference<>() {
         });
 
         Object deviceInfo = collect.get("sensorList:" + deviceName);
-        log.info("{}", deviceName + " : " + topic.getEndpoint());
 
 
         try {
             if (Objects.isNull(deviceInfo)) {
                 sensorAdaptor.saveSensor(topic);
+                return;
             }
             List<String> sensorTypeList = objectMapper.readValue(deviceInfo.toString(), new TypeReference<>() {
             });
@@ -66,6 +66,8 @@ public class OrganizationInfoServiceImpl implements OrganizationInfoService {
 
         } catch (FeignException.InternalServerError error) {
             log.error("{} : {} : {}", topic, deviceInfo, error.getMessage());
+        } catch (NullPointerException e) {
+            log.error("{} : {} : {} : {}","NullPoint", topic, deviceInfo, e.getMessage());
         }
     }
 }

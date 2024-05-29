@@ -37,6 +37,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
      *
      * @since 1.0.0
      */
+//    @Scheduled(cron = "0 0 */1 * * *")
     @Scheduled(cron = "0 */1 * * * *")
     public void predictSaveTemp() {
         List<OrganizationResponse> orgList = organizationAdaptor.getOrganizations().getBody();
@@ -59,8 +60,8 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
                     log.info("{} preidctTemp: {}", org.getOrganizationName(), preidctTemp);
 
                     redisSaveService.saveRedisWithOrganuzationName(org.getOrganizationName(), "predictTemp", preidctTemp);
-                } catch (Exception e) {
-                    log.error(org.getOrganizationName() + "은 influxDB에 없습니다.");
+                }catch (IndexOutOfBoundsException e) {
+                    log.error(org.getOrganizationName() + "의 predict 정보를 불러오지 못했습니다.");
                 }
             }
         }
@@ -96,15 +97,13 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
                 try {
                     String predictElect = calculateService.kwhElect(predictAdaptor.predictElect(influxDBService.queryData(fluxQuery)));
                     log.info("{} predictElect: {}", org.getOrganizationName(), predictElect);
-
+                  
                     redisSaveService.saveRedisWithOrganuzationName(org.getOrganizationName(), "predictElect", predictElect);
-                } catch (Exception e) {
-                    log.error(org.getOrganizationName() + "은 influxDB에 없습니다.");
+                }catch (Exception e){
+                    log.error(org.getOrganizationName() + "의 predict 정보를 불러오지 못했습니다.");
                 }
 
             }
         }
-
-
     }
 }
