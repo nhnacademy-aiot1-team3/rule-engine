@@ -1,9 +1,7 @@
 package live.databo3.ruleengine.ai.controller;
 
-import live.databo3.ruleengine.ai.dto.PredictElectResponse;
 import live.databo3.ruleengine.ai.service.RedisService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +24,7 @@ public class ElectChargeController {
      * @return predictElectValue redis에 저장된 예측된 전기요금
      */
     @GetMapping("/api/ruleengine/{organizationName}/electcharge")
-    public ResponseEntity<PredictElectResponse> getElectCharge(@PathVariable String organizationName) {
-        return ResponseEntity.ok(redisService.getPredictElectValue(organizationName));
+    public String getElectCharge(@PathVariable String organizationName) {
+        return redisService.getPredictElectValue(organizationName);
     }
 }
