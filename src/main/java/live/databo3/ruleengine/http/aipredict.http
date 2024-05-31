@@ -671,4 +671,4 @@ GET http://localhost:8080/tempdata
 
 ###
 
-GET http://localhost:8080/nhnacademy/electcharge
+GET http://localhost:8080/api/ruleengine/nhnacademy/electcharge
