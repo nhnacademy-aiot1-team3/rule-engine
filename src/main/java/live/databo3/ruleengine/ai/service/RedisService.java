@@ -1,5 +1,7 @@
 package live.databo3.ruleengine.ai.service;
 
+import live.databo3.ruleengine.ai.dto.PredictElectResponse;
+
 /**
  * Redis에 저장하는 서비스
  *
@@ -24,6 +26,6 @@ public interface RedisService {
      * @return predictElectValue 예측한 전기요금
      * @since 1.0.0
      */
-    String getPredictElectValue(String orgnzationName);
+    PredictElectResponse getPredictElectValue(String orgnzationName);
 
 }
