@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * RedisSaveService의 구현체
@@ -49,8 +50,8 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public String getPredictElectValue(String orgnzationName) {
         Map<String, Object> orgRedisList = objectMapper.convertValue(redisTemplate.opsForHash().entries("ai:" + orgnzationName), new TypeReference<>() {});
-
-        return orgRedisList.get("predictElect").toString();
+        Object result = orgRedisList.get("predictElect");
+        return Objects.isNull(result) ? null : result.toString();
     }
 
 
