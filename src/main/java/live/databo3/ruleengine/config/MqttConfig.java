@@ -16,7 +16,7 @@ public class MqttConfig {
 
     @Bean
     public IMqttClient mqttClient() throws MqttException {
-        IMqttClient client = new MqttClient("tcp://103.218.158.101:1883", UUID.randomUUID().toString());
+        IMqttClient client = new MqttClient("tcp://133.186.159.46:1883", UUID.randomUUID().toString());
         MqttConnectOptions options = new MqttConnectOptions();
         options.setAutomaticReconnect(true);
         options.setCleanSession(true);
