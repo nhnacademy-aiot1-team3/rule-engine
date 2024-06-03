@@ -2,6 +2,7 @@ package live.databo3.ruleengine.event.listener;
 
 import live.databo3.ruleengine.event.message.*;
 import live.databo3.ruleengine.flag.FromErrorDetect;
+import live.databo3.ruleengine.flag.FromErrorPass;
 import live.databo3.ruleengine.sensor.adaptor.SensorAdaptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,8 +58,9 @@ public class ErrorDetectEventListener {
                     sensorAdaptor.errorLogInsert(errorDto);
                 }else {
                     sensorErrorCount.computeIfPresent(targetTopic, (k, v) -> 0);
-                    sensorRefValue.computeIfPresent(targetTopic, (k,v) -> ( (Double)v + eventMessage.getPayload().getValue()) / 2);
-                applicationEventPublisher.publishEvent(this);
+                    sensorRefValue.computeIfPresent(targetTopic, (k,v) -> ( ((Double)v + eventMessage.getPayload().getValue()) / 2));
+                    EventMessage<TopicDto, MessagePayload> newEventMessage = new EventMessage<>(topicDto,eventMessage.getPayload());
+                    applicationEventPublisher.publishEvent(new RuleEngineEvent<>(this, newEventMessage, new FromErrorPass()));
                 }
             }
         }

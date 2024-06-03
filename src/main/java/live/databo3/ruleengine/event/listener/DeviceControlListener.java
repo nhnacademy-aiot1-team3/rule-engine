@@ -39,48 +39,46 @@ public class DeviceControlListener {
     private final ControlMessageService controlMessageService;
 
     @Async
-    @EventListener(condition = "#ruleEngineEvent.from instanceof T(live.databo3.ruleengine.flag.FromSensorExist)")
+    @EventListener(condition = "#ruleEngineEvent.from instanceof T(live.databo3.ruleengine.flag.FromErrorPass)")
     public void controlDevice(RuleEngineEvent<TopicDto, MessagePayload> ruleEngineEvent) throws JsonProcessingException {
         TopicDto topicDto = ruleEngineEvent.getMsg().getTopic();
         if (Boolean.FALSE.equals(redisTemplate.hasKey(topicDto.getBranch()))) {
             sensorAdaptor.reloadRedis(topicDto.getBranch());
         }
-        if (topicDto.getEndpoint().equals("temperature") || topicDto.getEndpoint().equals("humidity") || topicDto.getEndpoint().equals("co2")) {
-            Map<String, String> organizationConfig = objectMapper.convertValue(redisTemplate.opsForHash().entries(topicDto.getBranch()), new TypeReference<>() {
-            });
-            String redisConfig = organizationConfig.get("general:" + topicDto.getDevice() + "/" + topicDto.getEndpoint());
-            Map<String, String> config = objectMapper.readValue(redisConfig, Map.class);
-            String configType = config.get("functionName");
+        Map<String, String> organizationConfig = objectMapper.convertValue(redisTemplate.opsForHash().entries(topicDto.getBranch()), new TypeReference<>() {
+        });
+        String redisConfig = organizationConfig.get("general:" + topicDto.getDevice() + "/" + topicDto.getEndpoint());
+        Map<String, String> config = objectMapper.readValue(redisConfig, Map.class);
+        String configType = config.get("functionName");
 
             /*
             redis 에 저장된 sensor 에 따라 functionName 을 확인하고, CUSTOM 일 경우 수동제어, AI 일 경우 AI 분기 if-els
              */
-            if (configType.equals("CUSTOM") && (config.get("deviceName") != null)) {
-                String customRedisKey = organizationConfig.get("value:" + topicDto.getDevice() + "/" + topicDto.getEndpoint());
-                Map<String, String> customConfig = objectMapper.readValue(customRedisKey, Map.class);
-                double target = Double.parseDouble(customConfig.get("firstEntry"));
-                double threshold = Double.parseDouble(customConfig.get("secondEntry"));
-                if (Math.abs(ruleEngineEvent.getMsg().getPayload().getValue() - target) > threshold) {
+        if (configType.equals("CUSTOM") && (config.get("deviceName") != null)) {
+            String customRedisKey = organizationConfig.get("value:" + topicDto.getDevice() + "/" + topicDto.getEndpoint());
+            Map<String, String> customConfig = objectMapper.readValue(customRedisKey, Map.class);
+            double target = Double.parseDouble(customConfig.get("firstEntry"));
+            double threshold = Double.parseDouble(customConfig.get("secondEntry"));
+            if (Math.abs(ruleEngineEvent.getMsg().getPayload().getValue() - target) > threshold) {
                     /*
                     제어신호 MQTTMessage 로 보내는 부분.
                      */
-                    if (ruleEngineEvent.getMsg().getPayload().getValue() - target > 0) {
-                        controlMessageService.controlMessagePublish(config.get("deviceName"), "0");
-                    } else {
-                        controlMessageService.controlMessagePublish(config.get("deviceName"), "1");
-                    }
+                if (ruleEngineEvent.getMsg().getPayload().getValue() - target > 0) {
+                    controlMessageService.controlMessagePublish(config.get("deviceName"), "DO_2","1");
+                } else {
+                    controlMessageService.controlMessagePublish(config.get("deviceName"), "DO_2","0");
                 }
+            }
 
-            } else if (configType.equals("AI") && (config.get("deviceName") != null)) {
-                Map<String, String> aiConfig = objectMapper.convertValue(redisTemplate.opsForHash().entries("ai:" + topicDto.getPlace()), new TypeReference<>() {
-                });
-                Double aiTarget = Double.parseDouble(aiConfig.get("predictTemp"));
-                if (Math.abs(ruleEngineEvent.getMsg().getPayload().getValue() - aiTarget) > 1.5) {
-                    if (ruleEngineEvent.getMsg().getPayload().getValue() - aiTarget > 0) {
-                        controlMessageService.controlMessagePublish(config.get("deviceName"), "0");
-                    } else {
-                        controlMessageService.controlMessagePublish(config.get("deviceName"), "1");
-                    }
+        } else if (configType.equals("AI") && (config.get("deviceName") != null)) {
+            Map<String, String> aiConfig = objectMapper.convertValue(redisTemplate.opsForHash().entries("ai:" + topicDto.getPlace()), new TypeReference<>() {
+            });
+            Double aiTarget = Double.parseDouble(aiConfig.get("predictTemp"));
+            if (Math.abs(ruleEngineEvent.getMsg().getPayload().getValue() - aiTarget) > 1.5) {
+                if (ruleEngineEvent.getMsg().getPayload().getValue() - aiTarget > 0) {
+                    controlMessageService.controlMessagePublish(config.get("deviceName"), "DO_2","1");
+                } else {
+                    controlMessageService.controlMessagePublish(config.get("deviceName"), "DO_2","0");
                 }
             }
         }

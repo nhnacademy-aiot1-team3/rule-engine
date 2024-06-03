@@ -20,7 +20,7 @@ public class ControlMessageServiceImpl implements ControlMessageService {
     private final IMqttClient client;
 
     @Override
-    public void controlMessagePublish(String deviceId, String state) {
+    public void controlMessagePublish(String deviceId, String location,String state) {
         try {
             if(!client.isConnected()){
                 log.error("클라이언트가 연결되지 않았습니다. 재연결을 시도합니다.");
@@ -28,6 +28,7 @@ public class ControlMessageServiceImpl implements ControlMessageService {
             }
             Map<String, String> message = new HashMap<>();
             message.put("device_id", deviceId);
+            message.put("port", location);
             message.put("state", state);
 
             log.info("Publishing message: " + message);
@@ -36,7 +37,7 @@ public class ControlMessageServiceImpl implements ControlMessageService {
             mqttMessage.setQos(0); // QoS 설정
             mqttMessage.setRetained(false);
 
-            client.publish("control/s/nhnacademy/conrollmessage", mqttMessage);
+            client.publish("control/s/test/conrollmessage", mqttMessage);
         } catch (MqttException e) {
             log.error("client 연결 오류.");
         } catch (JsonProcessingException e) {
