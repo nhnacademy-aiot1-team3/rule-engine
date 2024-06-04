@@ -16,6 +16,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+/**
+ * 서비스에 센서가 존재하는지 확인하는 클래스
+ * @author 양현성
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor

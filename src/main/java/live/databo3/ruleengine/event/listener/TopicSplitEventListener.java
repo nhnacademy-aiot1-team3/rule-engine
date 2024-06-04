@@ -17,6 +17,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 
+
+/**
+ * 토픽 문자열을 필드로 나눠서 DTO 만들어주는 클래스
+ * @author 양현성
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor

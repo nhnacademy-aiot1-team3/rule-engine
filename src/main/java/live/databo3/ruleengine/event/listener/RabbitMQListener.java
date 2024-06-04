@@ -17,6 +17,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
+/**
+ * Rabbit MQ 에서 데이터를 꺼내오는 클래스
+ * @author 양현성
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor

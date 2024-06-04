@@ -37,8 +37,7 @@ public class PredictSaveAdaptorImpl implements PredictSaveAdaptor {
      *
      * @since 1.0.0
      */
-//    @Scheduled(cron = "0 0 */1 * * *")
-    @Scheduled(cron = "0 */1 * * * *")
+    @Scheduled(cron = "0 0 */1 * * *")
     public void predictSaveTemp() {
         List<OrganizationResponse> orgList = organizationAdaptor.getOrganizations().getBody();
 

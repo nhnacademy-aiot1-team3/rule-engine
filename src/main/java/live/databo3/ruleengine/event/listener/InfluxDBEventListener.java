@@ -16,6 +16,11 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+
+/**
+ * 센서 데이터를 Influx DB 에 삽입 하는 클래스
+ * @author 양현성
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
