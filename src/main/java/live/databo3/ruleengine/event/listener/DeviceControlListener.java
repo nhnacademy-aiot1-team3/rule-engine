@@ -82,6 +82,7 @@ public class DeviceControlListener {
                             controlMessageService.controlMessagePublish(config.get("deviceName"), "1");
                         }
                     }
+
                 } else if (configType.equals("AI") && (config.get("deviceName") != null)) {
                     Map<String, String> aiConfig = objectMapper.convertValue(redisTemplate.opsForHash().entries("ai:" + topicDto.getPlace()), new TypeReference<>() {
                     });
@@ -98,8 +99,6 @@ public class DeviceControlListener {
                 log.error("JsonMappingException occurred : Branch : {}", topicDto.getBranch());
             } catch (JsonProcessingException e) {
                 log.error("JsonProcessingException occurred : Branch : {}", topicDto.getBranch());
-            } catch (Exception e){
-                log.error("해당 Branch({})의 value 값이 존재하지 않습니다.", topicDto.getBranch());
             }
 
         }
